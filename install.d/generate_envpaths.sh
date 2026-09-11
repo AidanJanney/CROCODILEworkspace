@@ -23,6 +23,7 @@ DEFAULT=0
 FORCE=0
 SSH_GITHUB=0
 ENV_PREFIX=''
+NOTEBOOKS=0
 
 # Register what packages need to be installed from CLI flags
 for ((i=1; i<=$#; i++)); do
@@ -37,7 +38,9 @@ for ((i=1; i<=$#; i++)); do
             for PKG in "${!PKG_PATHS[@]}"; do
                 declare "${PKG}=1"
             done
+            NOTEBOOKS=1
             ;;
+        --notebooks) NOTEBOOKS=1 ;;
         -d|--default) DEFAULT=1 ;;
         -f|--force) FORCE=1 ;;
         -s|--ssh-github) SSH_GITHUB=1 ;;
@@ -50,6 +53,11 @@ for ((i=1; i<=$#; i++)); do
             ;;
     esac
 done
+
+# --notebooks needs the CrocoDash env (for the crocogallery CLI); pull it in.
+if [[ "$NOTEBOOKS" -eq 1 && "$CROCODASH" -eq 0 ]]; then
+    CROCODASH=1
+fi
 
 # Assign paths
 if [[ "$DEFAULT" -eq 1 ]]; then
@@ -89,3 +97,4 @@ done
 echo "export FORCE=\"$FORCE\"" >> "$ENV_FILE"
 echo "export SSH_GITHUB=\"$SSH_GITHUB\"" >> "$ENV_FILE"
 echo "export ENV_PREFIX=\"$ENV_PREFIX\"" >> "$ENV_FILE"
+echo "export INSTALL_NOTEBOOKS=\"$NOTEBOOKS\"" >> "$ENV_FILE"

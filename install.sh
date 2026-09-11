@@ -24,7 +24,9 @@ Package Selection:
   --crocodash       Install CrocoDash model components
   --cupid           Install CUPiD diagnostics framework
   --dart            Install DART data assimilation system
-  --all             Install all packages
+  --notebooks       Render CrocoGallery notebooks listed in install.d/notebooks.txt
+                    into <BASK_PATH>/workspace/ (implies --crocodash)
+  --all             Install all packages (includes --notebooks)
 
 Installation Options:
   -d, --default     Use default paths for all packages (non-interactive)
@@ -38,11 +40,13 @@ Examples:
   ./install.sh --all --default
   ./install.sh --cesm -d -f
   ./install.sh --crocodash --cupid -d -s
+  ./install.sh --crocodash --notebooks -d
 
 Notes:
   - Multiple flags can be combined
   - Without -d/--default, the script will prompt for custom paths
   - If a package already exists, it will be skipped unless -f/--force is used
+  - Edit install.d/notebooks.txt to change which gallery notebooks --notebooks renders
 EOF
         exit 0
 fi
@@ -82,6 +86,32 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
     mamba env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
     add_env_vars_to_conda "$CROCODASH_ENV_NAME"
     echo "CrocoDash environment installed."
+fi
+
+# CrocoGallery notebooks
+RENDERED_NOTEBOOKS=()
+if [[ "$INSTALL_NOTEBOOKS" -eq 1 ]]; then
+    NOTEBOOKS_LIST="$INSTALL_DIR/notebooks.txt"
+    if [[ ! -f "$NOTEBOOKS_LIST" ]]; then
+        echo "WARNING: --notebooks passed but $NOTEBOOKS_LIST is missing; skipping."
+    elif [[ -z "${CROCODASH_ENV_NAME:-}" ]]; then
+        echo "WARNING: --notebooks requires the CrocoDash env; skipping notebook rendering."
+    else
+        echo "Rendering CrocoGallery notebooks into $NBS_PATH..."
+        while IFS= read -r NB || [[ -n "$NB" ]]; do
+            NB="${NB%%#*}"
+            NB="${NB//[[:space:]]/}"
+            [[ -z "$NB" ]] && continue
+            OUTPUT="${NBS_PATH}${NB}.ipynb"
+            echo "  - $NB -> $OUTPUT"
+            conda run -n "$CROCODASH_ENV_NAME" crocogallery template \
+                --machine derecho \
+                --notebook "$NB" \
+                --output "$OUTPUT"
+            RENDERED_NOTEBOOKS+=("$NB")
+        done < "$NOTEBOOKS_LIST"
+        echo "CrocoGallery notebooks rendered."
+    fi
 fi
 
 # model2obs
@@ -145,6 +175,15 @@ CrocoDash:
     commit: $CROCODASH_SHA
     conda environment: $CROCODASH_ENV_NAME
 EOF
+fi
+if [[ "$INSTALL_NOTEBOOKS" -eq 1 && "${#RENDERED_NOTEBOOKS[@]}" -gt 0 ]]; then
+    {
+        echo "CrocoGallery notebooks:"
+        echo "    workspace: $NBS_PATH"
+        for NB in "${RENDERED_NOTEBOOKS[@]}"; do
+            echo "    - $NB"
+        done
+    } | tee -a $INSTALL_RECORD
 fi
 if [[ "$INSTALL_CESM" -eq 1 ]]; then
     cat <<EOF | tee -a $INSTALL_RECORD
