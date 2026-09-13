@@ -25,12 +25,17 @@ SSH_GITHUB=0
 ENV_PREFIX=''
 
 # Register what packages need to be installed from CLI flags
+UNKNOWN_ARGS=()
 for ((i=1; i<=$#; i++)); do
     arg="${!i}"
 
     case "$arg" in
         --envname|-e)
             ((i++))
+            if [[ "$i" -gt "$#" ]]; then
+                echo "Error: $arg requires a value" >&2
+                exit 1
+            fi
             ENV_PREFIX="${!i}"
             ;;
         --all)
@@ -53,10 +58,17 @@ for ((i=1; i<=$#; i++)); do
             upper="${upper^^}"
             if [[ -v PKG_PATHS[$upper] ]]; then
                 declare "${upper}=1"
+            else
+                UNKNOWN_ARGS+=("$arg")
             fi
             ;;
     esac
 done
+
+if [[ "${#UNKNOWN_ARGS[@]}" -gt 0 ]]; then
+    echo "Error: unrecognized argument(s): ${UNKNOWN_ARGS[*]}" >&2
+    exit 1
+fi
 
 # Assign paths
 if [[ "$DEFAULT" -eq 1 ]]; then
