@@ -1,4 +1,4 @@
-# BaskTemplate
+# Bask
 
 A template repository for regional ocean modeling workflows using tools developed in the NSF-funded [CROCODILE](https://github.com/CROCODILE-CESM?view_as=public) project.
 
