@@ -25,6 +25,7 @@ Package Selection:
   --cupid           Install CUPiD diagnostics framework
   --dart            Install DART data assimilation system
   --all             Install all packages
+  --workshop        Install all packages except CUPiD
 
 Installation Options:
   -d, --default     Use default paths for all packages (non-interactive)

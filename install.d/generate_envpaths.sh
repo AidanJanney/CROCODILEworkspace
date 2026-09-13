@@ -38,6 +38,13 @@ for ((i=1; i<=$#; i++)); do
                 declare "${PKG}=1"
             done
             ;;
+        --workshop)
+            for PKG in "${!PKG_PATHS[@]}"; do
+                if [[ "$PKG" != "CUPID" ]]; then
+                    declare "${PKG}=1"
+                fi
+            done
+            ;;
         -d|--default) DEFAULT=1 ;;
         -f|--force) FORCE=1 ;;
         -s|--ssh-github) SSH_GITHUB=1 ;;
