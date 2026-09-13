@@ -2,20 +2,8 @@
 
 set -euo pipefail
 
-# Check for help flag
-SHOW_HELP="0"
-if [ "$#" -eq 0 ]; then
-    SHOW_HELP="1"
-    echo "One or more packages need to be specified"
-    echo ""
-fi
-for arg in "$@"; do
-    if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
-        SHOW_HELP="1"
-    fi
-done
-if [[ "$SHOW_HELP" -eq 1 ]]; then
-        cat << EOF
+show_help() {
+    cat << EOF
 Usage: ./install.sh [OPTIONS]
 
 Package Selection:
@@ -25,12 +13,13 @@ Package Selection:
   --cupid           Install CUPiD diagnostics framework
   --dart            Install DART data assimilation system
   --all             Install all packages
+  --workshop        Install all packages except CUPiD
 
 Installation Options:
   -d, --default     Use default paths for all packages (non-interactive)
   -f, --force       Remove and reinstall selected packages if they already exist
   -s, --ssh-github  Use SSH URLs instead of HTTPS for GitHub submodules (requires SSH key)
-  -e, --envname     Specify prefix for conda environment names (default: 'bask')
+  -e, --envname     Specify prefix for conda environment names (default: none)
   -h, --help        Display this help message
 
 Examples:
@@ -44,13 +33,33 @@ Notes:
   - Without -d/--default, the script will prompt for custom paths
   - If a package already exists, it will be skipped unless -f/--force is used
 EOF
-        exit 0
+}
+
+# Check for help flag
+SHOW_HELP="0"
+if [ "$#" -eq 0 ]; then
+    SHOW_HELP="1"
+    echo "One or more packages need to be specified"
+    echo ""
+fi
+for arg in "$@"; do
+    if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
+        SHOW_HELP="1"
+    fi
+done
+if [[ "$SHOW_HELP" -eq 1 ]]; then
+    show_help
+    exit 0
 fi
 
 # generate environmental variables
 INSTALL_DIR="$PWD/install.d"
 cd $INSTALL_DIR
-./generate_envpaths.sh "$@" # pass all flags
+if ! ./generate_envpaths.sh "$@"; then # pass all flags
+    echo ""
+    show_help
+    exit 1
+fi
 
 # clean already installed submodules
 source ./envpaths.sh
@@ -79,7 +88,7 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
     cd "$INSTALL_DIR"
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CROCODASH_PATH/environment.yml")
     CROCODASH_ENV_NAME="${ENV_PREFIX}${ENV_NAME}"
-    mamba env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
+    conda env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
     add_env_vars_to_conda "$CROCODASH_ENV_NAME"
     echo "CrocoDash environment installed."
 fi
@@ -108,12 +117,12 @@ if [[ "$INSTALL_CUPID" -eq 1 ]]; then
 
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-infrastructure.yml)
     CUPID_ENV1_NAME="${ENV_PREFIX}${ENV_NAME}"
-    mamba env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
+    conda env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
     add_env_vars_to_conda "$CUPID_ENV1_NAME"
 
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-analysis.yml)
     CUPID_ENV2_NAME="${ENV_PREFIX}${ENV_NAME}"
-    mamba env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
+    conda env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
     add_env_vars_to_conda "$CUPID_ENV2_NAME"
 
     echo "CUPiD environments installed."
