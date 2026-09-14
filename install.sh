@@ -106,7 +106,25 @@ if [[ "$INSTALL_NOTEBOOKS" -eq 1 ]]; then
     elif [[ -z "${CROCODASH_ENV_NAME:-}" ]]; then
         echo "WARNING: --notebooks requires the CrocoDash env; skipping notebook rendering."
     else
+        mkdir -p "$CASES_PATH" "$INPUT_PATH"
+
+        # The gallery's shared dataset paths (GEBCO, TPXO, ...) are GLADE
+        # locations, so only ask for them when we are actually on GLADE;
+        # elsewhere the notebooks keep their <KEY> placeholders for the user
+        # to fill in. The three paths Bask itself owns are always injected,
+        # since the installer is the only thing that knows where they landed.
+        TEMPLATE_ARGS=()
+        if [[ -d /glade/campaign/cesm/cesmdata/inputdata ]]; then
+            TEMPLATE_ARGS+=(--machine glade)
+        fi
+        TEMPLATE_ARGS+=(--set "casedir=$CASES_PATH" --set "inputdir=$INPUT_PATH")
+        if [[ -n "${CESM_PATH:-}" ]]; then
+            TEMPLATE_ARGS+=(--set "CESM=$CESM_PATH")
+        fi
+
         echo "Rendering CrocoGallery notebooks into $NBS_PATH..."
+        echo "  cases -> $CASES_PATH"
+        echo "  input -> $INPUT_PATH"
         while IFS= read -r NB || [[ -n "$NB" ]]; do
             NB="${NB%%#*}"
             NB="${NB//[[:space:]]/}"
@@ -114,7 +132,7 @@ if [[ "$INSTALL_NOTEBOOKS" -eq 1 ]]; then
             OUTPUT="${NBS_PATH}${NB}.ipynb"
             echo "  - $NB -> $OUTPUT"
             conda run -n "$CROCODASH_ENV_NAME" crocogallery template \
-                --machine derecho \
+                "${TEMPLATE_ARGS[@]}" \
                 --notebook "$NB" \
                 --output "$OUTPUT"
             RENDERED_NOTEBOOKS+=("$NB")
@@ -189,6 +207,8 @@ if [[ "$INSTALL_NOTEBOOKS" -eq 1 && "${#RENDERED_NOTEBOOKS[@]}" -gt 0 ]]; then
     {
         echo "CrocoGallery notebooks:"
         echo "    workspace: $NBS_PATH"
+        echo "    case directory: $CASES_PATH"
+        echo "    input directory: $INPUT_PATH"
         for NB in "${RENDERED_NOTEBOOKS[@]}"; do
             echo "    - $NB"
         done

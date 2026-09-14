@@ -99,6 +99,20 @@ elif [ -t 0 ]; then
     done
 fi
 
+# Where the rendered gallery notebooks put their CESM cases and their MOM6
+# input files. These are not packages -- nothing is installed into them -- but
+# the notebooks need real directories, so they are resolved here alongside the
+# package paths and injected at render time. On GLADE they belong on scratch:
+# a single case's forcing runs to tens of GB, which does not belong in the
+# quota'd, backed-up work filesystem that holds the Bask tree.
+if [[ -d "/glade/derecho/scratch/$USER" ]]; then
+    CROC_DATA_ROOT="/glade/derecho/scratch/$USER"
+else
+    CROC_DATA_ROOT="$BASK_PATH"
+fi
+export CASES_PATH="$(realpath -m "${CASES_PATH:-$CROC_DATA_ROOT/croc_cases}")"
+export INPUT_PATH="$(realpath -m "${INPUT_PATH:-$CROC_DATA_ROOT/croc_input}")"
+
 # Write all paths to envpaths.sh
 ENV_FILE="envpaths.sh"
 : > "$ENV_FILE"  # Truncate file
@@ -118,3 +132,5 @@ echo "export FORCE=\"$FORCE\"" >> "$ENV_FILE"
 echo "export SSH_GITHUB=\"$SSH_GITHUB\"" >> "$ENV_FILE"
 echo "export ENV_PREFIX=\"$ENV_PREFIX\"" >> "$ENV_FILE"
 echo "export INSTALL_NOTEBOOKS=\"$NOTEBOOKS\"" >> "$ENV_FILE"
+echo "export CASES_PATH=\"$CASES_PATH\"" >> "$ENV_FILE"
+echo "export INPUT_PATH=\"$INPUT_PATH\"" >> "$ENV_FILE"
