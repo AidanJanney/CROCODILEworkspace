@@ -26,12 +26,17 @@ ENV_PREFIX=''
 NOTEBOOKS=0
 
 # Register what packages need to be installed from CLI flags
+UNKNOWN_ARGS=()
 for ((i=1; i<=$#; i++)); do
     arg="${!i}"
 
     case "$arg" in
         --envname|-e)
             ((i++))
+            if [[ "$i" -gt "$#" ]]; then
+                echo "Error: $arg requires a value" >&2
+                exit 1
+            fi
             ENV_PREFIX="${!i}"
             ;;
         --all)
@@ -41,6 +46,14 @@ for ((i=1; i<=$#; i++)); do
             NOTEBOOKS=1
             ;;
         --notebooks) NOTEBOOKS=1 ;;
+        --workshop)
+            for PKG in "${!PKG_PATHS[@]}"; do
+                if [[ "$PKG" != "CUPID" ]]; then
+                    declare "${PKG}=1"
+                fi
+            done
+            NOTEBOOKS=1
+            ;;
         -d|--default) DEFAULT=1 ;;
         -f|--force) FORCE=1 ;;
         -s|--ssh-github) SSH_GITHUB=1 ;;
@@ -49,10 +62,17 @@ for ((i=1; i<=$#; i++)); do
             upper="${upper^^}"
             if [[ -v PKG_PATHS[$upper] ]]; then
                 declare "${upper}=1"
+            else
+                UNKNOWN_ARGS+=("$arg")
             fi
             ;;
     esac
 done
+
+if [[ "${#UNKNOWN_ARGS[@]}" -gt 0 ]]; then
+    echo "Error: unrecognized argument(s): ${UNKNOWN_ARGS[*]}" >&2
+    exit 1
+fi
 
 # --notebooks needs the CrocoDash env (for the crocogallery CLI); pull it in.
 if [[ "$NOTEBOOKS" -eq 1 && "$CROCODASH" -eq 0 ]]; then
