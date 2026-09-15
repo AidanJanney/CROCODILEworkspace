@@ -114,9 +114,9 @@ if [[ "$INSTALL_NOTEBOOKS" -eq 1 ]]; then
         # to fill in. The three paths Bask itself owns are always injected,
         # since the installer is the only thing that knows where they landed.
         TEMPLATE_ARGS=()
-        if [[ -d /glade/campaign/cesm/cesmdata/inputdata ]]; then
-            TEMPLATE_ARGS+=(--machine glade)
-        fi
+        # if [[ -d /glade/campaign/cesm/cesmdata/inputdata ]]; then
+        #     TEMPLATE_ARGS+=(--machine glade)
+        # fi
         TEMPLATE_ARGS+=(--set "casedir=$CASES_PATH" --set "inputdir=$INPUT_PATH")
         if [[ -n "${CESM_PATH:-}" ]]; then
             TEMPLATE_ARGS+=(--set "CESM=$CESM_PATH")
