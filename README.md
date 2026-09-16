@@ -25,6 +25,7 @@ From the repository root, run:
 - `--model2obs`: Install model2obs diagnostics tools
 - `--cupid`: Install CUPiD diagnostics framework
 - `--cesm`: Install CESM model
+- `--cesm_da`: Install CESM_DA, a DART-enabled version of CESM
 - `--dart`: Currently a no-op on its own — DART is not yet installed as a standalone package/environment. It only sets the `DART_PATH` used by the model2obs installer. Standalone DART installation may be added in a future release.
 - `--all`: Install all packages (includes `--notebooks`)
 - `--workshop`: Install all and only the packages used during the CROCODILE workshop (includes `--notebooks`)
@@ -73,6 +74,7 @@ If a package already exists at the target path, the script stops with an error b
 - **model2obs**: Diagnostics and analysis tools for MOM6 (and soon ROMS) model output
 - **CUPiD**: NCAR's unified framework for running analysis and diagnostics on climate model output
 - **CESM**: Community Earth System Model for climate simulations
+- **CESM_DA**: DART-enabled Community Earth System Model
 - **DART**: Data Assimilation Research Testbed for ensemble data assimilation
 
 ## Workspace

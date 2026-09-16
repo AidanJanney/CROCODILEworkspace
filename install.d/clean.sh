@@ -11,6 +11,7 @@ Usage: ./clean.sh [OPTIONS]
 
 Package Selection:
   --cesm            Remove CESM model
+  --cesm_da         Remove CESM_DA DART-enabled CESM checkout
   --model2obs       Remove model2obs diagnostics tools
   --crocodash       Remove CrocoDash model components
   --cupid           Remove CUPiD diagnostics framework
@@ -35,7 +36,7 @@ EOF
 fi
 
 # If no arguments provided, use envpaths.sh (preserves original behavior when called from install.sh)
-PKGS=(CESM MODEL2OBS CROCODASH CUPID DART)
+PKGS=(CESM CESM_DA MODEL2OBS CROCODASH CUPID DART)
 source ./envpaths.sh
 
 if [[ $# -eq 0 ]]; then
@@ -105,6 +106,14 @@ if [ "$CLEAN_CESM" -eq 1 ] && [ -n "$CESM_PATH" ]; then
     cd "$BASK_PATH"
     rm -rf "$CESM_PATH"
     echo "CESM removed."
+fi
+
+# CESM_DA
+if [ "$CLEAN_CESM_DA" -eq 1 ] && [ -n "$CESM_DA_PATH" ]; then
+    echo "Removing CESM_DA..."
+    cd "$BASK_PATH"
+    rm -rf "$CESM_DA_PATH"
+    echo "CESM_DA removed."
 fi
 
 echo "Cleanup complete."

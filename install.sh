@@ -8,6 +8,7 @@ Usage: ./install.sh [OPTIONS]
 
 Package Selection:
   --cesm            Install CESM model
+  --cesm_da         Install CESM_DA DART-enabled CESM
   --model2obs       Install model2obs diagnostics tools
   --crocodash       Install CrocoDash model components
   --cupid           Install CUPiD diagnostics framework
@@ -204,6 +205,16 @@ if [[ "$INSTALL_CESM" -eq 1 ]]; then
     echo "CESM installed."
 fi
 
+# CESM_DA
+if [[ "$INSTALL_CESM_DA" -eq 1 ]]; then
+    echo "Installing CESM_DA..."
+    cd "$CESM_DA_PATH"
+    CESM_DA_SHA=$(git rev-parse HEAD)
+    ./bin/git-fleximod update --path "$CESM_DA_PATH"
+    cd "$INSTALL_DIR"
+    echo "CESM_DA installed."
+fi
+
 cat <<'EOF'
 ------------------------------------------------------------------------------------
 
@@ -272,6 +283,14 @@ if [[ "$INSTALL_CESM" -eq 1 ]]; then
 CESM:
     path:   $CESM_PATH
     commit: $CESM_SHA
+
+EOF
+fi
+if [[ "$INSTALL_CESM_DA" -eq 1 ]]; then
+    cat <<EOF | tee -a $INSTALL_RECORD
+CESM_DA:
+    path:   $CESM_DA_PATH
+    commit: $CESM_DA_SHA
 
 EOF
 fi
