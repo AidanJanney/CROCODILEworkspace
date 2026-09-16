@@ -34,7 +34,7 @@ Examples:
 
 Notes:
   - Multiple flags can be combined
-  - If a package already exists, it will be skipped unless -f/--force is used
+  - If a package already exists, the installer stops unless -f/--force is used
   - Edit install.d/notebooks.txt to change which gallery notebooks --notebooks renders
 EOF
 }
@@ -240,6 +240,7 @@ EOF
 echo ""
 echo "Install complete."
 echo "Components, environments and paths installed:"
+echo ""
 
 DATETIME=$(date "+%Y-%m-%d_%H-%M-%S")
 INSTALL_RECORD="installed_${DATETIME}.txt"

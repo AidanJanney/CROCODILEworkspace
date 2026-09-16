@@ -40,7 +40,7 @@ From the repository root, run:
 
 You can combine multiple flags. Default paths are used unless you pass `-p`/`--paths`, which prompts for each package path and requires an interactive terminal.
 
-If a package already exists at the target path, the script will skip installation and print a message. Use the `-f` or `--force` flag to remove and reinstall existing packages.
+If a package already exists at the target path, the script stops with an error before installing anything. Use the `-f` or `--force` flag to remove and reinstall existing packages.
 
 ### Examples
 
