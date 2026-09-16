@@ -18,26 +18,44 @@ Package Selection:
   --workshop        Install all packages except CUPiD (includes --notebooks)
 
 Installation Options:
-  -d, --default     Use default paths for all packages (non-interactive)
+  -d, --default     Use default paths for all packages (default behaviour, non-interactive)
+  -p, --paths       Specify paths for all packages (interactive)
   -f, --force       Remove and reinstall selected packages if they already exist
-  -s, --ssh-github  Use SSH URLs instead of HTTPS for GitHub submodules (requires SSH key)
+  -s, --ssh-github  Use SSH URLs instead of HTTPS for GitHub clones (requires SSH key)
   -e, --envname     Specify prefix for conda environment names (default: none)
   -h, --help        Display this help message
 
 Examples:
-  ./install.sh --crocodash --model2obs -d
-  ./install.sh --all --default
+  ./install.sh --workshop
+  ./install.sh --crocodash --model2obs
+  ./install.sh --all --paths
   ./install.sh --cesm -d -f
-  ./install.sh --crocodash --cupid -d -s
-  ./install.sh --crocodash --notebooks -d
+  ./install.sh --crocodash --notebooks
 
 Notes:
   - Multiple flags can be combined
-  - Without -d/--default, the script will prompt for custom paths
-  - If a package already exists, it will be skipped unless -f/--force is used
+  - If a package already exists, the installer stops unless -f/--force is used
   - Edit install.d/notebooks.txt to change which gallery notebooks --notebooks renders
 EOF
 }
+
+is_ncar_hpc_host() {
+    hostname_value=$(hostname -s 2>/dev/null || hostname)
+    hostname_value=$(printf '%s' "$hostname_value" | tr '[:upper:]' '[:lower:]')
+    case "$hostname_value" in
+        dec*|derecho*|crlogin*|crht*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+if is_ncar_hpc_host; then
+    module load conda/latest
+fi
+
 
 # Check for help flag
 SHOW_HELP="0"
@@ -92,7 +110,7 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
     cd "$INSTALL_DIR"
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CROCODASH_PATH/environment.yml")
     CROCODASH_ENV_NAME="${ENV_PREFIX}${ENV_NAME}"
-    conda env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
+    mamba env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
     add_env_vars_to_conda "$CROCODASH_ENV_NAME"
     echo "CrocoDash environment installed."
 fi
@@ -165,12 +183,12 @@ if [[ "$INSTALL_CUPID" -eq 1 ]]; then
 
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-infrastructure.yml)
     CUPID_ENV1_NAME="${ENV_PREFIX}${ENV_NAME}"
-    conda env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
+    mamba env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
     add_env_vars_to_conda "$CUPID_ENV1_NAME"
 
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-analysis.yml)
     CUPID_ENV2_NAME="${ENV_PREFIX}${ENV_NAME}"
-    conda env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
+    mamba env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
     add_env_vars_to_conda "$CUPID_ENV2_NAME"
 
     echo "CUPiD environments installed."
@@ -186,10 +204,43 @@ if [[ "$INSTALL_CESM" -eq 1 ]]; then
     echo "CESM installed."
 fi
 
+cat <<'EOF'
+------------------------------------------------------------------------------------
+
+   ,-----.,------.  ,-----. ,-----. ,-----. ,------.  ,--.,--.   ,------.
+  '  .--./|  .--. ''  .-.  ''  .--./'  .-.  '|  .-.  \ |  ||  |   |  .---'
+  |  |    |  '--'.'|  | |  ||  |    |  | |  ||  |  \  :|  ||  |   |  `--,
+  '  '--'\|  |\  \ '  '-'  ''  '--'\'  '-'  '|  '--'  /|  ||  '--.|  `---.
+   `-----'`--' '--' `-----'  `-----' `-----' `-------' `--'`-----'`------'                                                                                                                                                                    
+EOF
+cat <<'EOF'
+           ___     ___
+          /   \   /   \
+         |   O | |   O |
+       ,-'\___/___\___/___'-._                                   ___
+    ,-'                       ______________________            /  /
+  ,'                                  ,--.   ,--.   '.         /  /
+  |                    .    .         (##)   (##)    |        /  /
+  '-.                                               ,'       /  /  
+     _____________________________________________-'        /__/  
+                 \/    \________,--------------------------.  
+                                |__________________________| 
+
+EOF
+cat <<'EOF'
+  ,--.   ,--. ,-----. ,------. ,--. ,--. ,---.  ,------.   ,---.   ,-----.,------.
+  |  |   |  |'  .-.  '|  .--. '|  .'   /'   .-' |  .--. ' /  O  \ '  .--./|  .---'
+  |  |.'.|  ||  | |  ||  '--'.'|  .   ' `.  `-. |  '--' ||  .-.  ||  |    |  `--,
+  |   ,'.   |'  '-'  '|  |\  \ |  |\   \.-'    ||  | --' |  | |  |'  '--'\|  `---.
+  '--'   '--' `-----' `--' '--'`--' '--'`-----' `--'     `--' `--' `-----'`------'
+
+------------------------------------------------------------------------------------
+EOF
+
 echo ""
-echo "------------------------------------------------------------------"
 echo "Install complete."
 echo "Components, environments and paths installed:"
+echo ""
 
 DATETIME=$(date "+%Y-%m-%d_%H-%M-%S")
 INSTALL_RECORD="installed_${DATETIME}.txt"
@@ -201,6 +252,7 @@ CrocoDash:
     path:   $CROCODASH_PATH
     commit: $CROCODASH_SHA
     conda environment: $CROCODASH_ENV_NAME
+
 EOF
 fi
 if [[ "$INSTALL_NOTEBOOKS" -eq 1 && "${#RENDERED_NOTEBOOKS[@]}" -gt 0 ]]; then
@@ -213,12 +265,14 @@ if [[ "$INSTALL_NOTEBOOKS" -eq 1 && "${#RENDERED_NOTEBOOKS[@]}" -gt 0 ]]; then
             echo "    - $NB"
         done
     } | tee -a $INSTALL_RECORD
+    echo ""
 fi
 if [[ "$INSTALL_CESM" -eq 1 ]]; then
     cat <<EOF | tee -a $INSTALL_RECORD
 CESM:
     path:   $CESM_PATH
     commit: $CESM_SHA
+
 EOF
 fi
 if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
@@ -227,6 +281,7 @@ MODEL2OBS:
     path:   $MODEL2OBS_PATH
     commit: $MODEL2OBS_SHA
     conda environment: $MODEL2OBS_ENV_NAME
+
 EOF
 fi
 if [[ "$INSTALL_CUPID" -eq 1 ]]; then
@@ -236,13 +291,14 @@ CUPiD:
     commit: $CUPID_SHA
     conda environments: $CUPID_ENV1_NAME
                         $CUPID_ENV2_NAME
+
 EOF
 fi
 
-echo ""
 echo "To activate an environment:"
+echo "module load conda"
 echo "conda activate <environment-name>"
-echo "Example:"
-echo "conda activate CrocoDash"
+echo "(example: conda activate CrocoDash)"
+echo ""
 echo "If you specified a prefix for environment names:"
 echo "conda activate <prefix>-CrocoDash"

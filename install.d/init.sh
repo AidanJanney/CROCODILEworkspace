@@ -17,67 +17,85 @@ else
     CESM_GITHUB="https://github.com/CROCODILE-CESM/CESM"
 fi
 
+#### Existence check
+# Interrrupt install if any package is already at path
+
+EXISTING_PACKAGES=()
+
+check_existing() {
+    if [ -d "$2" ]; then
+        EXISTING_PACKAGES+=("$1 at $2")
+    fi
+}
+
+if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
+    check_existing "CrocoDash" "$CROCODASH_PATH"
+fi
+if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
+    check_existing "model2obs" "$MODEL2OBS_PATH"
+fi
+if [[ "$INSTALL_CUPID" -eq 1 ]]; then
+    check_existing "CUPiD" "$CUPID_PATH"
+fi
+if [[ "$INSTALL_CESM" -eq 1 ]]; then
+    check_existing "CESM" "$CESM_PATH"
+fi
+
+if [[ "${#EXISTING_PACKAGES[@]}" -gt 0 ]]; then
+    echo "Error: the following selected packages are already installed:" >&2
+    for PKG in "${EXISTING_PACKAGES[@]}"; do
+        echo "  - $PKG" >&2
+    done
+    echo "Use -f or --force to remove and reinstall them, or deselect them." >&2
+    exit 1
+fi
+
 #### CrocoDash
 
 if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
-    if [ -d "$CROCODASH_PATH" ]; then
-        echo "CrocoDash already exists at $CROCODASH_PATH. Use -f or --force to reinstall."
-    else
-        echo "Downloading CrocoDash..."
-        git submodule add "$CROCODASH_GITHUB" "$CROCODASH_PATH"
-        cd "$CROCODASH_PATH"
-        git fetch --tags
-        cd "$BASK_PATH"
-        cd "$CROCODASH_PATH"
-        git submodule update --init --recursive
-        cd "$BASK_PATH"
-        echo "CrocoDash downloaded."
-    fi
+    echo "Downloading CrocoDash..."
+    git clone "$CROCODASH_GITHUB" "$CROCODASH_PATH"
+    cd "$CROCODASH_PATH"
+    git fetch --tags
+    cd "$BASK_PATH"
+    cd "$CROCODASH_PATH"
+    git submodule update --init --recursive
+    cd "$BASK_PATH"
+    echo "CrocoDash downloaded."
 fi
+
 #### model2obs
 
 if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
-    if [ -d "$MODEL2OBS_PATH" ]; then
-        echo "model2obs already exists at $MODEL2OBS_PATH. Use -f or --force to reinstall."
-    else
-        echo "Downloading model2obs..."
-        git submodule add "$MODEL2OBS_GITHUB" "$MODEL2OBS_PATH"
-        cd "$MODEL2OBS_PATH"
-        git fetch --tags
-        cd "$BASK_PATH"
-        echo "model2obs downloaded."
-    fi
+    echo "Downloading model2obs..."
+    git clone "$MODEL2OBS_GITHUB" "$MODEL2OBS_PATH"
+    cd "$MODEL2OBS_PATH"
+    git fetch --tags
+    cd "$BASK_PATH"
+    echo "model2obs downloaded."
 fi
 
 #### CUPiD
 
 if [[ "$INSTALL_CUPID" -eq 1 ]]; then
-    if [ -d "$CUPID_PATH" ]; then
-        echo "CUPiD already exists at $CUPID_PATH. Use -f or --force to reinstall."
-    else
-        echo "Downloading CUPiD..."
-        git submodule add "$CUPID_GITHUB" "$CUPID_PATH"
-        cd "$CUPID_PATH"
-        git fetch --tags
-        git checkout v0.3.1
-        cd "$BASK_PATH"
-        cd "$CUPID_PATH"
-        git submodule update --init --recursive
-        cd "$BASK_PATH"
-        echo "CUPiD downloaded."
-    fi
+    echo "Downloading CUPiD..."
+    git clone "$CUPID_GITHUB" "$CUPID_PATH"
+    cd "$CUPID_PATH"
+    git fetch --tags
+    git checkout v0.3.1
+    cd "$BASK_PATH"
+    cd "$CUPID_PATH"
+    git submodule update --init --recursive
+    cd "$BASK_PATH"
+    echo "CUPiD downloaded."
 fi
 
 #### CESM
 
 if [[ "$INSTALL_CESM" -eq 1 ]]; then
-    if [ -d "$CESM_PATH" ]; then
-        echo "CESM already exists at $CESM_PATH. Use -f or --force to reinstall."
-    else
-        echo "Downloading CESM..."
-        git submodule add -b full_regional_cesm "$CESM_GITHUB" "$CESM_PATH"
-        cd "$CESM_PATH"
-        git pull
-        echo "CESM downloaded."
-    fi
+    echo "Downloading CESM..."
+    git clone -b full_regional_cesm "$CESM_GITHUB" "$CESM_PATH"
+    cd "$CESM_PATH"
+    git pull
+    echo "CESM downloaded."
 fi

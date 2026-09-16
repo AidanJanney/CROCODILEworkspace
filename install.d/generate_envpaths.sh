@@ -19,7 +19,9 @@ for PKG in "${!PKG_PATHS[@]}"; do
     declare "${PKG}=0"
     export "${PKG}_PATH="
 done
-DEFAULT=0
+DEFAULT=1
+DEFAULT_FLAG=0
+PATHS_FLAG=0
 FORCE=0
 SSH_GITHUB=0
 ENV_PREFIX=''
@@ -54,7 +56,8 @@ for ((i=1; i<=$#; i++)); do
             done
             NOTEBOOKS=1
             ;;
-        -d|--default) DEFAULT=1 ;;
+        -d|--default) DEFAULT_FLAG=1 ;;
+        -p|--paths) PATHS_FLAG=1 ;;
         -f|--force) FORCE=1 ;;
         -s|--ssh-github) SSH_GITHUB=1 ;;
         *)
@@ -74,6 +77,18 @@ if [[ "${#UNKNOWN_ARGS[@]}" -gt 0 ]]; then
     exit 1
 fi
 
+if [[ "$DEFAULT_FLAG" -eq 1 && "$PATHS_FLAG" -eq 1 ]]; then
+    echo "Error: -d/--default and -p/--paths are mutually exclusive" >&2
+    exit 1
+fi
+if [[ "$PATHS_FLAG" -eq 1 ]]; then
+    if [ ! -t 0 ]; then
+        echo "Error: -p/--paths requires an interactive terminal" >&2
+        exit 1
+    fi
+    DEFAULT=0
+fi
+
 # --notebooks needs the CrocoDash env (for the crocogallery CLI); pull it in.
 if [[ "$NOTEBOOKS" -eq 1 && "$CROCODASH" -eq 0 ]]; then
     CROCODASH=1
@@ -85,7 +100,7 @@ if [[ "$DEFAULT" -eq 1 ]]; then
         export "${PKG}_PATH"="$(realpath -m "$BASK_PATH/${PKG_PATHS[$PKG]}")"
         echo "$PKG root path set to $(eval echo \${${PKG}_PATH})"
     done
-elif [ -t 0 ]; then
+else
     for PKG in "${!PKG_PATHS[@]}"; do
         DEF="$BASK_PATH/${PKG_PATHS[$PKG]}"
         printf "Please provide %s root path (default: %s): " "$PKG" "$DEF"

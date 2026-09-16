@@ -79,12 +79,7 @@ echo "Cleaning selected components..."
 if [ "$CLEAN_CROCODASH" -eq 1 ] && [ -e "$CROCODASH_PATH" ]; then
     echo "Removing CrocoDash..."
     cd "$BASK_PATH"
-    git submodule deinit -f "$CROCODASH_PATH" 2>/dev/null || true
-    git rm -f "$CROCODASH_PATH" 2>/dev/null || true
     rm -rf "$CROCODASH_PATH"
-    rm -rf ".git/modules/$CROCODASH_PATH" 2>/dev/null || true
-    git config -f .gitmodules --remove-section "submodule.$CROCODASH_PATH" 2>/dev/null || true
-    git add .gitmodules 2>/dev/null || true
     echo "CrocoDash removed."
 fi
 
@@ -92,12 +87,7 @@ fi
 if [ "$CLEAN_MODEL2OBS" -eq 1 ] && [ -n "$MODEL2OBS_PATH" ]; then
     echo "Removing model2obs..."
     cd "$BASK_PATH"
-    git submodule deinit -f "$MODEL2OBS_PATH" 2>/dev/null || true
-    git rm -f "$MODEL2OBS_PATH" 2>/dev/null || true
     rm -rf "$MODEL2OBS_PATH"
-    rm -rf ".git/modules/$MODEL2OBS_PATH" 2>/dev/null || true
-    git config -f .gitmodules --remove-section "submodule.$MODEL2OBS_PATH" 2>/dev/null || true
-    git add .gitmodules 2>/dev/null || true
     echo "model2obs removed."
 fi
 
@@ -105,12 +95,7 @@ fi
 if [ "$CLEAN_CUPID" -eq 1 ] && [ -n "$CUPID_PATH" ]; then
     echo "Removing CUPiD..."
     cd "$BASK_PATH"
-    git submodule deinit -f "$CUPID_PATH" 2>/dev/null || true
-    git rm -f "$CUPID_PATH" 2>/dev/null || true
     rm -rf "$CUPID_PATH"
-    rm -rf ".git/modules/$CUPID_PATH" 2>/dev/null || true
-    git config -f .gitmodules --remove-section "submodule.$CUPID_PATH" 2>/dev/null || true
-    git add .gitmodules 2>/dev/null || true
     echo "CUPiD removed."
 fi
 
@@ -118,12 +103,7 @@ fi
 if [ "$CLEAN_CESM" -eq 1 ] && [ -n "$CESM_PATH" ]; then
     echo "Removing CESM..."
     cd "$BASK_PATH"
-    git submodule deinit -f "$CESM_PATH" 2>/dev/null || true
-    git rm -f "$CESM_PATH" 2>/dev/null || true
     rm -rf "$CESM_PATH"
-    rm -rf ".git/modules/$CESM_PATH" 2>/dev/null || true
-    git config -f .gitmodules --remove-section "submodule.$CESM_PATH" 2>/dev/null || true
-    git add .gitmodules 2>/dev/null || true
     echo "CESM removed."
 fi
 
