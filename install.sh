@@ -18,22 +18,22 @@ Package Selection:
   --workshop        Install all packages except CUPiD (includes --notebooks)
 
 Installation Options:
-  -d, --default     Use default paths for all packages (non-interactive)
+  -d, --default     Use default paths for all packages (default behaviour, non-interactive)
+  -p, --paths       Specify paths for all packages (interactive)
   -f, --force       Remove and reinstall selected packages if they already exist
   -s, --ssh-github  Use SSH URLs instead of HTTPS for GitHub clones (requires SSH key)
   -e, --envname     Specify prefix for conda environment names (default: none)
   -h, --help        Display this help message
 
 Examples:
-  ./install.sh --crocodash --model2obs -d
-  ./install.sh --all --default
+  ./install.sh --workshop
+  ./install.sh --crocodash --model2obs
+  ./install.sh --all --paths
   ./install.sh --cesm -d -f
-  ./install.sh --crocodash --cupid -d -s
-  ./install.sh --crocodash --notebooks -d
+  ./install.sh --crocodash --notebooks
 
 Notes:
   - Multiple flags can be combined
-  - Without -d/--default, the script will prompt for custom paths
   - If a package already exists, it will be skipped unless -f/--force is used
   - Edit install.d/notebooks.txt to change which gallery notebooks --notebooks renders
 EOF
