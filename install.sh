@@ -8,7 +8,8 @@ Usage: ./install.sh [OPTIONS]
 
 Package Selection:
   --cesm            Install CESM model
-  --cesm_da         Install CESM_DA DART-enabled CESM
+  --cesm_da         Install CESM_DA DART-enabled CESM (with --notebooks, also
+                    builds a CESM_DA conda env for the DART notebooks)
   --model2obs       Install model2obs diagnostics tools
   --crocodash       Install CrocoDash model components
   --cupid           Install CUPiD diagnostics framework
@@ -212,6 +213,26 @@ if [[ "$INSTALL_CESM_DA" -eq 1 ]]; then
     CESM_DA_SHA=$(git rev-parse HEAD)
     ./bin/git-fleximod update --path "$CESM_DA_PATH"
     cd "$INSTALL_DIR"
+
+    # The CESM_DA conda env only exists to run the DART notebooks, so only
+    # build it when --notebooks is requested. It's built from CrocoDash's own
+    # environment.yml (its pip -e paths resolve relative to that file's
+    # directory, so the generated copy has to live alongside the real
+    # CrocoDash/gallery/rm6 checkouts) plus the DART notebook packages that
+    # aren't part of CrocoDash itself.
+    if [[ "$INSTALL_NOTEBOOKS" -eq 1 ]]; then
+        echo "Building CESM_DA conda environment..."
+        CESM_DA_ENV_FILE="$CROCODASH_PATH/cesm_da_environment.yml"
+        awk '
+            /^  - pip:/ { print; print "    - pydartdiags"; print "    - dartobsgen"; next }
+            { print }
+        ' "$CROCODASH_PATH/environment.yml" > "$CESM_DA_ENV_FILE"
+        CESM_DA_ENV_NAME="${ENV_PREFIX}CESM_DA"
+        mamba env create -f "$CESM_DA_ENV_FILE" --name ${CESM_DA_ENV_NAME} --yes
+        add_env_vars_to_conda "$CESM_DA_ENV_NAME"
+        rm -f "$CESM_DA_ENV_FILE"
+    fi
+
     echo "CESM_DA installed."
 fi
 
@@ -287,12 +308,15 @@ CESM:
 EOF
 fi
 if [[ "$INSTALL_CESM_DA" -eq 1 ]]; then
-    cat <<EOF | tee -a $INSTALL_RECORD
-CESM_DA:
-    path:   $CESM_DA_PATH
-    commit: $CESM_DA_SHA
-
-EOF
+    {
+        echo "CESM_DA:"
+        echo "    path:   $CESM_DA_PATH"
+        echo "    commit: $CESM_DA_SHA"
+        if [[ -n "${CESM_DA_ENV_NAME:-}" ]]; then
+            echo "    conda environment: $CESM_DA_ENV_NAME"
+        fi
+        echo ""
+    } | tee -a $INSTALL_RECORD
 fi
 if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     cat <<EOF | tee -a $INSTALL_RECORD
