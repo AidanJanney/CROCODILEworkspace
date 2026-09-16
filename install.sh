@@ -20,7 +20,7 @@ Package Selection:
 Installation Options:
   -d, --default     Use default paths for all packages (non-interactive)
   -f, --force       Remove and reinstall selected packages if they already exist
-  -s, --ssh-github  Use SSH URLs instead of HTTPS for GitHub submodules (requires SSH key)
+  -s, --ssh-github  Use SSH URLs instead of HTTPS for GitHub clones (requires SSH key)
   -e, --envname     Specify prefix for conda environment names (default: none)
   -h, --help        Display this help message
 

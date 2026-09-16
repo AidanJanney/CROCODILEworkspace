@@ -24,7 +24,7 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
         echo "CrocoDash already exists at $CROCODASH_PATH. Use -f or --force to reinstall."
     else
         echo "Downloading CrocoDash..."
-        git submodule add "$CROCODASH_GITHUB" "$CROCODASH_PATH"
+        git clone "$CROCODASH_GITHUB" "$CROCODASH_PATH"
         cd "$CROCODASH_PATH"
         git fetch --tags
         cd "$BASK_PATH"
@@ -41,7 +41,7 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
         echo "model2obs already exists at $MODEL2OBS_PATH. Use -f or --force to reinstall."
     else
         echo "Downloading model2obs..."
-        git submodule add "$MODEL2OBS_GITHUB" "$MODEL2OBS_PATH"
+        git clone "$MODEL2OBS_GITHUB" "$MODEL2OBS_PATH"
         cd "$MODEL2OBS_PATH"
         git fetch --tags
         cd "$BASK_PATH"
@@ -56,7 +56,7 @@ if [[ "$INSTALL_CUPID" -eq 1 ]]; then
         echo "CUPiD already exists at $CUPID_PATH. Use -f or --force to reinstall."
     else
         echo "Downloading CUPiD..."
-        git submodule add "$CUPID_GITHUB" "$CUPID_PATH"
+        git clone "$CUPID_GITHUB" "$CUPID_PATH"
         cd "$CUPID_PATH"
         git fetch --tags
         git checkout v0.3.1
@@ -75,7 +75,7 @@ if [[ "$INSTALL_CESM" -eq 1 ]]; then
         echo "CESM already exists at $CESM_PATH. Use -f or --force to reinstall."
     else
         echo "Downloading CESM..."
-        git submodule add -b full_regional_cesm "$CESM_GITHUB" "$CESM_PATH"
+        git clone -b full_regional_cesm "$CESM_GITHUB" "$CESM_PATH"
         cd "$CESM_PATH"
         git pull
         echo "CESM downloaded."

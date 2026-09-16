@@ -1,6 +1,10 @@
-# Machine-dependent paths
+# Machine-dependent paths and subpackages
 install.d/envpaths.sh
-install.d/installed_*.txt
+CESM/
+CrocoDash/
+model2obs/
+CUPiD/
+DART/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
