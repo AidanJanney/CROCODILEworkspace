@@ -219,6 +219,7 @@ CrocoDash:
     path:   $CROCODASH_PATH
     commit: $CROCODASH_SHA
     conda environment: $CROCODASH_ENV_NAME
+
 EOF
 fi
 if [[ "$INSTALL_NOTEBOOKS" -eq 1 && "${#RENDERED_NOTEBOOKS[@]}" -gt 0 ]]; then
@@ -231,12 +232,14 @@ if [[ "$INSTALL_NOTEBOOKS" -eq 1 && "${#RENDERED_NOTEBOOKS[@]}" -gt 0 ]]; then
             echo "    - $NB"
         done
     } | tee -a $INSTALL_RECORD
+    echo ""
 fi
 if [[ "$INSTALL_CESM" -eq 1 ]]; then
     cat <<EOF | tee -a $INSTALL_RECORD
 CESM:
     path:   $CESM_PATH
     commit: $CESM_SHA
+
 EOF
 fi
 if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
@@ -245,6 +248,7 @@ MODEL2OBS:
     path:   $MODEL2OBS_PATH
     commit: $MODEL2OBS_SHA
     conda environment: $MODEL2OBS_ENV_NAME
+
 EOF
 fi
 if [[ "$INSTALL_CUPID" -eq 1 ]]; then
@@ -254,13 +258,14 @@ CUPiD:
     commit: $CUPID_SHA
     conda environments: $CUPID_ENV1_NAME
                         $CUPID_ENV2_NAME
+
 EOF
 fi
 
-echo ""
 echo "To activate an environment:"
+echo "module load conda"
 echo "conda activate <environment-name>"
-echo "Example:"
-echo "conda activate CrocoDash"
+echo "(example: conda activate CrocoDash)"
+echo ""
 echo "If you specified a prefix for environment names:"
 echo "conda activate <prefix>-CrocoDash"
