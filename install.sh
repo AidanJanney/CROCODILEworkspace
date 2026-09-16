@@ -39,6 +39,24 @@ Notes:
 EOF
 }
 
+is_ncar_hpc_host() {
+    hostname_value=$(hostname -s 2>/dev/null || hostname)
+    hostname_value=$(printf '%s' "$hostname_value" | tr '[:upper:]' '[:lower:]')
+    case "$hostname_value" in
+        dec*|derecho*|crlogin*|crht*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+if is_ncar_hpc_host; then
+    module load conda/latest
+fi
+
+
 # Check for help flag
 SHOW_HELP="0"
 if [ "$#" -eq 0 ]; then
@@ -92,7 +110,7 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
     cd "$INSTALL_DIR"
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CROCODASH_PATH/environment.yml")
     CROCODASH_ENV_NAME="${ENV_PREFIX}${ENV_NAME}"
-    conda env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
+    mamba env create -f "$CROCODASH_PATH"/environment.yml --name ${CROCODASH_ENV_NAME} --yes
     add_env_vars_to_conda "$CROCODASH_ENV_NAME"
     echo "CrocoDash environment installed."
 fi
@@ -165,12 +183,12 @@ if [[ "$INSTALL_CUPID" -eq 1 ]]; then
 
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-infrastructure.yml)
     CUPID_ENV1_NAME="${ENV_PREFIX}${ENV_NAME}"
-    conda env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
+    mamba env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
     add_env_vars_to_conda "$CUPID_ENV1_NAME"
 
     ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-analysis.yml)
     CUPID_ENV2_NAME="${ENV_PREFIX}${ENV_NAME}"
-    conda env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
+    mamba env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
     add_env_vars_to_conda "$CUPID_ENV2_NAME"
 
     echo "CUPiD environments installed."
