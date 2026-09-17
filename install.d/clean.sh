@@ -14,7 +14,6 @@ Package Selection:
   --model2obs       Remove model2obs diagnostics tools
   --crocodash       Remove CrocoDash model components
   --cupid           Remove CUPiD diagnostics framework
-  --dart            Remove DART data assimilation system
   --all             Remove all packages
 
 Options:
@@ -35,7 +34,7 @@ EOF
 fi
 
 # If no arguments provided, use envpaths.sh (preserves original behavior when called from install.sh)
-PKGS=(CESM MODEL2OBS CROCODASH CUPID DART)
+PKGS=(CESM MODEL2OBS CROCODASH CUPID)
 source ./envpaths.sh
 
 if [[ $# -eq 0 ]]; then

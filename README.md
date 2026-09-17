@@ -25,7 +25,7 @@ From the repository root, run:
 - `--model2obs`: Install model2obs diagnostics tools
 - `--cupid`: Install CUPiD diagnostics framework
 - `--cesm`: Install CESM model
-- `--dart`: Currently a no-op on its own — DART is not yet installed as a standalone package/environment. It only sets the `DART_PATH` used by the model2obs installer. Standalone DART installation may be added in a future release.
+- `--dart`: Root path of an existing DART installation, used by model2obs (see [DART](#dart) below)
 - `--all`: Install all packages (includes `--notebooks`)
 - `--workshop`: Install all and only the packages used during the CROCODILE workshop (includes `--notebooks`)
 - `--notebooks`: Render the CrocoGallery notebooks listed in `install.d/notebooks.txt` into `workspace/` (implies `--crocodash`)
@@ -41,6 +41,17 @@ From the repository root, run:
 You can combine multiple flags. Default paths are used unless you pass `-p`/`--paths`, which prompts for each package path and requires an interactive terminal.
 
 If a package already exists at the target path, the script stops with an error before installing anything. Use the `-f` or `--force` flag to remove and reinstall existing packages.
+
+### DART
+
+DART is **not** installed by CROCODILEworkspace. It is an external dependency that model2obs is pointed at: model2obs runs DART's `perfect_model_obs` executable and imports DART's CrocoLake observation converter. DART has to be compiled separately; on NCAR infrastructure pre-compiled builds are available and are automatically set up with the `--workshop` flag.
+
+The installer resolves the DART root in this order:
+
+1. `--dart /path/to/DART`
+2. the interactive prompt shown by `-p`/`--paths`
+3. `DART_ROOT_PATH` exported in your environment before running `./install.sh`
+4. the pre-compiled default in `install.d/generate_envpaths.sh`
 
 ### Examples
 
@@ -65,6 +76,9 @@ If a package already exists at the target path, the script stops with an error b
 
 # Choose each package path interactively
 ./install.sh --all --paths
+
+# Install model2obs against your own DART build
+./install.sh --model2obs --dart /glade/work/me/DART
 ```
 
 ## Subpackages
@@ -73,7 +87,7 @@ If a package already exists at the target path, the script stops with an error b
 - **model2obs**: Diagnostics and analysis tools for MOM6 (and soon ROMS) model output
 - **CUPiD**: NCAR's unified framework for running analysis and diagnostics on climate model output
 - **CESM**: Community Earth System Model for climate simulations
-- **DART**: Data Assimilation Research Testbed for ensemble data assimilation
+- **DART**: path to DART (Data Assimilation Research Testbed), used by model2obs not installed here
 
 ## Workspace
 
