@@ -8,6 +8,7 @@ export BASK_PATH="$(realpath -m "$(dirname "$PWD")")"
 # Array of package names and their relative default paths
 declare -A PKG_PATHS=(
     [CESM]="CESM"
+    [CESM_DA]="CESM_DA"
     [MODEL2OBS]="model2obs"
     [CROCODASH]="CrocoDash"
     [CUPID]="CUPiD"
@@ -89,7 +90,9 @@ if [[ "$PATHS_FLAG" -eq 1 ]]; then
     DEFAULT=0
 fi
 
-# --notebooks needs the CrocoDash env (for the crocogallery CLI); pull it in.
+# --notebooks needs the CrocoDash env (for the crocogallery CLI), and CESM_DA's
+# own conda env (built from CrocoDash's environment.yml) is only needed to run
+# the DART notebooks -- pull CrocoDash in for either case.
 if [[ "$NOTEBOOKS" -eq 1 && "$CROCODASH" -eq 0 ]]; then
     CROCODASH=1
 fi

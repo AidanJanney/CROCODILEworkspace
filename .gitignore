@@ -1,6 +1,7 @@
 # Machine-dependent paths and subpackages
 install.d/envpaths.sh
 CESM/
+CESM_DA/
 CrocoDash/
 model2obs/
 CUPiD/
