@@ -1,0 +1,5 @@
+MODEL2OBS:
+    path:   /glade/work/ajanney/CROCODILE_WORKSHOP_2026/bask_config/CROCODILEworkspace/model2obs
+    commit: 8154b50a338d84b322a5b2017d02dec946b986e7
+    conda environment: model2obs
+

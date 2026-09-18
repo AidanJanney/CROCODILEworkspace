@@ -4,7 +4,7 @@ CESM/
 CESM_DA/
 CrocoDash/
 model2obs/
-CUPiD/
+mom6-tools/
 DART/
 
 # Byte-compiled / optimized / DLL files

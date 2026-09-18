@@ -12,12 +12,12 @@ Package Selection:
                     builds a CESM_DA conda env for the DART notebooks)
   --model2obs       Install model2obs diagnostics tools
   --crocodash       Install CrocoDash model components
-  --cupid           Install CUPiD diagnostics framework
+  --mom6-tools      Install mom6-tools diagnostics framework
   --dart            Install DART data assimilation system
   --notebooks       Render CrocoGallery notebooks listed in install.d/notebooks.txt
                     into <BASK_PATH>/workspace/ (implies --crocodash)
   --all             Install all packages (includes --notebooks)
-  --workshop        Install all packages except CUPiD (includes --notebooks)
+  --workshop        Install all packages (includes --notebooks)
 
 Installation Options:
   -d, --default     Use default paths for all packages (default behaviour, non-interactive)
@@ -175,25 +175,20 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_1.yaml "$NBS_PATH"
 fi
 
-# CUPiD
-if [[ "$INSTALL_CUPID" -eq 1 ]]; then
-    echo "Installing CUPiD environments..."
+# mom6-tools
+if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
+    echo "Installing mom6-tools environments..."
 
-    cd "$CUPID_PATH"
-    CUPID_SHA=$(git rev-parse HEAD)
+    cd "$MOM6TOOLS_PATH"
+    MOM6TOOLS_SHA=$(git rev-parse HEAD)
     cd "$INSTALL_DIR"
 
-    ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-infrastructure.yml)
-    CUPID_ENV1_NAME="${ENV_PREFIX}${ENV_NAME}"
-    mamba env create -f "$CUPID_PATH"/environments/cupid-infrastructure.yml --name ${CUPID_ENV1_NAME} --yes
-    add_env_vars_to_conda "$CUPID_ENV1_NAME"
+    ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$MOM6TOOLS_PATH"/environment.yml)
+    MOM6TOOLS_ENV_NAME="${ENV_PREFIX}${ENV_NAME}"
+    mamba env create -f "$MOM6TOOLS_PATH"/environment.yml --name ${MOM6TOOLS_ENV_NAME} --yes
+    add_env_vars_to_conda "$MOM6TOOLS_ENV_NAME"
 
-    ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$CUPID_PATH"/environments/cupid-analysis.yml)
-    CUPID_ENV2_NAME="${ENV_PREFIX}${ENV_NAME}"
-    mamba env create -f "$CUPID_PATH"/environments/cupid-analysis.yml --name ${CUPID_ENV2_NAME} --yes
-    add_env_vars_to_conda "$CUPID_ENV2_NAME"
-
-    echo "CUPiD environments installed."
+    echo "mom6-tools environments installed."
 fi
 
 # CESM
@@ -327,13 +322,12 @@ MODEL2OBS:
 
 EOF
 fi
-if [[ "$INSTALL_CUPID" -eq 1 ]]; then
+if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
     cat <<EOF | tee -a $INSTALL_RECORD
-CUPiD:
-    path:   $CUPID_PATH
-    commit: $CUPID_SHA
-    conda environments: $CUPID_ENV1_NAME
-                        $CUPID_ENV2_NAME
+mom6-tools:
+    path:   $MOM6TOOLS_PATH
+    commit: $MOM6TOOLS_SHA
+    conda environment: $MOM6TOOLS_ENV_NAME
 
 EOF
 fi

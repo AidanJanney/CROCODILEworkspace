@@ -11,8 +11,19 @@ declare -A PKG_PATHS=(
     [CESM_DA]="CESM_DA"
     [MODEL2OBS]="model2obs"
     [CROCODASH]="CrocoDash"
-    [CUPID]="CUPiD"
+    [MOM6TOOLS]="mom6-tools"
     [DART]="DART"
+)
+
+# The flag a user types for each package. Declared rather than derived from the
+# key, so a package's name does not have to be a legal shell variable name.
+declare -A PKG_FLAGS=(
+    [--cesm]=CESM
+    [--cesm_da]=CESM_DA
+    [--model2obs]=MODEL2OBS
+    [--crocodash]=CROCODASH
+    [--mom6-tools]=MOM6TOOLS
+    [--dart]=DART
 )
 
 # Initialize flags to 0 and paths to empty
@@ -51,9 +62,7 @@ for ((i=1; i<=$#; i++)); do
         --notebooks) NOTEBOOKS=1 ;;
         --workshop)
             for PKG in "${!PKG_PATHS[@]}"; do
-                if [[ "$PKG" != "CUPID" ]]; then
-                    declare "${PKG}=1"
-                fi
+                declare "${PKG}=1"
             done
             NOTEBOOKS=1
             ;;
@@ -62,10 +71,8 @@ for ((i=1; i<=$#; i++)); do
         -f|--force) FORCE=1 ;;
         -s|--ssh-github) SSH_GITHUB=1 ;;
         *)
-            upper="${arg#--}"
-            upper="${upper^^}"
-            if [[ -v PKG_PATHS[$upper] ]]; then
-                declare "${upper}=1"
+            if [[ -v PKG_FLAGS[$arg] ]]; then
+                declare "${PKG_FLAGS[$arg]}=1"
             else
                 UNKNOWN_ARGS+=("$arg")
             fi

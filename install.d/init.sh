@@ -8,13 +8,13 @@ source ./envpaths.sh
 if [[ "$SSH_GITHUB" -eq 1 ]]; then
     CROCODASH_GITHUB="git@github.com:CROCODILE-CESM/CrocoDash.git"
     MODEL2OBS_GITHUB="git@github.com:CROCODILE-CESM/model2obs.git"
-    CUPID_GITHUB="git@github.com:NCAR/CUPiD.git"
+    MOM6TOOLS_GITHUB="git@github.com:NCAR/mom6-tools.git"
     CESM_GITHUB="git@github.com:CROCODILE-CESM/CESM"
     CESM_DA_GITHUB="git@github.com:CROCODILE-CESM/CESM"
 else
     CROCODASH_GITHUB="https://github.com/CROCODILE-CESM/CrocoDash.git"
     MODEL2OBS_GITHUB="https://github.com/CROCODILE-CESM/model2obs.git"
-    CUPID_GITHUB="https://github.com/NCAR/CUPiD.git"
+    MOM6TOOLS_GITHUB="https://github.com/NCAR/mom6-tools.git"
     CESM_GITHUB="https://github.com/CROCODILE-CESM/CESM"
     CESM_DA_GITHUB="https://github.com/CROCODILE-CESM/CESM"
 fi
@@ -36,8 +36,8 @@ fi
 if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     check_existing "model2obs" "$MODEL2OBS_PATH"
 fi
-if [[ "$INSTALL_CUPID" -eq 1 ]]; then
-    check_existing "CUPiD" "$CUPID_PATH"
+if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
+    check_existing "MOM6TOOLS" "$MOM6TOOLS_PATH"
 fi
 if [[ "$INSTALL_CESM" -eq 1 ]]; then
     check_existing "CESM" "$CESM_PATH"
@@ -80,19 +80,19 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     echo "model2obs downloaded."
 fi
 
-#### CUPiD
+#### MOM6TOOLS
 
-if [[ "$INSTALL_CUPID" -eq 1 ]]; then
-    echo "Downloading CUPiD..."
-    git clone "$CUPID_GITHUB" "$CUPID_PATH"
-    cd "$CUPID_PATH"
+if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
+    echo "Downloading MOM6TOOLS..."
+    git clone "$MOM6TOOLS_GITHUB" "$MOM6TOOLS_PATH"
+    cd "$MOM6TOOLS_PATH"
     git fetch --tags
-    git checkout v0.3.1
+    git checkout CROCODILE_workshop_2026
     cd "$BASK_PATH"
-    cd "$CUPID_PATH"
+    cd "$MOM6TOOLS_PATH"
     git submodule update --init --recursive
     cd "$BASK_PATH"
-    echo "CUPiD downloaded."
+    echo "mom6-tools downloaded."
 fi
 
 #### CESM

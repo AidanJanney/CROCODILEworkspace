@@ -14,7 +14,7 @@ Package Selection:
   --cesm_da         Remove CESM_DA DART-enabled CESM checkout
   --model2obs       Remove model2obs diagnostics tools
   --crocodash       Remove CrocoDash model components
-  --cupid           Remove CUPiD diagnostics framework
+  --mom6-tools      Remove mom6-tools diagnostics framework
   --dart            Remove DART data assimilation system
   --all             Remove all packages
 
@@ -36,7 +36,18 @@ EOF
 fi
 
 # If no arguments provided, use envpaths.sh (preserves original behavior when called from install.sh)
-PKGS=(CESM CESM_DA MODEL2OBS CROCODASH CUPID DART)
+PKGS=(CESM CESM_DA MODEL2OBS CROCODASH MOM6TOOLS DART)
+
+# The flag a user types for each package, declared rather than derived from the
+# name, so a package's name does not have to be a legal shell variable name.
+declare -A PKG_FLAGS=(
+    [--cesm]=CESM
+    [--cesm_da]=CESM_DA
+    [--model2obs]=MODEL2OBS
+    [--crocodash]=CROCODASH
+    [--mom6-tools]=MOM6TOOLS
+    [--dart]=DART
+)
 source ./envpaths.sh
 
 if [[ $# -eq 0 ]]; then
@@ -61,14 +72,9 @@ else
                 done
                 ;;
             *)
-                upper="${arg#--}"
-                upper="${upper^^}"
-                for PKG in "${PKGS[@]}"; do
-                    if [[ "$PKG" == "$upper" ]]; then
-                        export "CLEAN_${upper}=1"
-                        break
-                    fi
-                done
+                if [[ -v PKG_FLAGS[$arg] ]]; then
+                    export "CLEAN_${PKG_FLAGS[$arg]}=1"
+                fi
                 ;;
         esac
     done
@@ -92,12 +98,12 @@ if [ "$CLEAN_MODEL2OBS" -eq 1 ] && [ -n "$MODEL2OBS_PATH" ]; then
     echo "model2obs removed."
 fi
 
-# CUPiD
-if [ "$CLEAN_CUPID" -eq 1 ] && [ -n "$CUPID_PATH" ]; then
-    echo "Removing CUPiD..."
+# mom6-tools
+if [ "$CLEAN_MOM6TOOLS" -eq 1 ] && [ -n "$MOM6TOOLS_PATH" ]; then
+    echo "Removing mom6-tools..."
     cd "$BASK_PATH"
-    rm -rf "$CUPID_PATH"
-    echo "CUPiD removed."
+    rm -rf "$MOM6TOOLS_PATH"
+    echo "mom6-tools removed."
 fi
 
 # CESM
