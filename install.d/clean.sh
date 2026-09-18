@@ -15,7 +15,6 @@ Package Selection:
   --model2obs       Remove model2obs diagnostics tools
   --crocodash       Remove CrocoDash model components
   --mom6-tools      Remove mom6-tools diagnostics framework
-  --dart            Remove DART data assimilation system
   --all             Remove all packages
 
 Options:
