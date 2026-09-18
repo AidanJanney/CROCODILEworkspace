@@ -12,7 +12,6 @@ declare -A PKG_PATHS=(
     [MODEL2OBS]="model2obs"
     [CROCODASH]="CrocoDash"
     [CUPID]="CUPiD"
-    [DART]="DART"
 )
 
 # Initialize flags to 0 and paths to empty
@@ -27,6 +26,7 @@ FORCE=0
 SSH_GITHUB=0
 ENV_PREFIX=''
 NOTEBOOKS=0
+DART_PATH_FLAG=''
 
 # Register what packages need to be installed from CLI flags
 UNKNOWN_ARGS=()
@@ -41,6 +41,14 @@ for ((i=1; i<=$#; i++)); do
                 exit 1
             fi
             ENV_PREFIX="${!i}"
+            ;;
+        --dart)
+            ((i++))
+            if [[ "$i" -gt "$#" ]]; then
+                echo "Error: $arg requires a value" >&2
+                exit 1
+            fi
+            DART_PATH_FLAG="${!i}"
             ;;
         --all)
             for PKG in "${!PKG_PATHS[@]}"; do
@@ -131,6 +139,28 @@ fi
 export CASES_PATH="$(realpath -m "${CASES_PATH:-$CROC_DATA_ROOT/croc_cases}")"
 export INPUT_PATH="$(realpath -m "${INPUT_PATH:-$CROC_DATA_ROOT/croc_input}")"
 
+# Root of the existing DART installation that model2obs is pointed at: DART is
+# not installed here, and is compiled separately for each machine.
+# Resolution order: --dart > prompt (-p) > inherited $DART_ROOT_PATH > default.
+DEFAULT_DART_ROOT_PATH="/glade/u/home/emilanese/work/DART-11.21.2-Casper"
+
+if [[ -n "$DART_PATH_FLAG" ]]; then
+    DART_ROOT_PATH="$DART_PATH_FLAG"
+else
+    DART_ROOT_PATH="${DART_ROOT_PATH:-$DEFAULT_DART_ROOT_PATH}"
+    if [[ "$DEFAULT" -eq 0 && "$MODEL2OBS" -eq 1 ]]; then
+        printf "Please provide DART root path (default: %s): " "$DART_ROOT_PATH"
+        read -r input_path
+        if [ -n "$input_path" ]; then
+            DART_ROOT_PATH="$input_path"
+        fi
+    fi
+fi
+export DART_ROOT_PATH="$(realpath -m -s "$DART_ROOT_PATH")"
+if [[ "$MODEL2OBS" -eq 1 ]]; then
+    echo "DART root path set to $DART_ROOT_PATH"
+fi
+
 # Write all paths to envpaths.sh
 ENV_FILE="envpaths.sh"
 : > "$ENV_FILE"  # Truncate file
@@ -152,3 +182,4 @@ echo "export ENV_PREFIX=\"$ENV_PREFIX\"" >> "$ENV_FILE"
 echo "export INSTALL_NOTEBOOKS=\"$NOTEBOOKS\"" >> "$ENV_FILE"
 echo "export CASES_PATH=\"$CASES_PATH\"" >> "$ENV_FILE"
 echo "export INPUT_PATH=\"$INPUT_PATH\"" >> "$ENV_FILE"
+echo "export DART_ROOT_PATH=\"$DART_ROOT_PATH\"" >> "$ENV_FILE"

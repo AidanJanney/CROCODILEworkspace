@@ -13,7 +13,7 @@ Package Selection:
   --model2obs       Install model2obs diagnostics tools
   --crocodash       Install CrocoDash model components
   --cupid           Install CUPiD diagnostics framework
-  --dart            Install DART data assimilation system
+  --dart            Root of an existing DART installation (used by model2obs)
   --notebooks       Render CrocoGallery notebooks listed in install.d/notebooks.txt
                     into <BASK_PATH>/workspace/ (implies --crocodash)
   --all             Install all packages (includes --notebooks)
@@ -33,11 +33,14 @@ Examples:
   ./install.sh --all --paths
   ./install.sh --cesm -d -f
   ./install.sh --crocodash --notebooks
+  ./install.sh --model2obs --dart /glade/work/me/DART
 
 Notes:
   - Multiple flags can be combined
   - If a package already exists, the installer stops unless -f/--force is used
   - Edit install.d/notebooks.txt to change which gallery notebooks --notebooks renders
+  - DART is not installed here: model2obs is pointed at an existing build.
+    Override its location with --dart, or by exporting DART_ROOT_PATH.
 EOF
 }
 
@@ -87,6 +90,30 @@ fi
 
 # clean already installed submodules
 source ./envpaths.sh
+
+# model2obs runs DART's perfect_model_obs and imports DART's CrocoLake
+# converter, so check the DART root before building any conda environment.
+if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
+    DART_ERRORS=()
+    if [[ ! -x "$DART_ROOT_PATH/models/MOM6/work/perfect_model_obs" ]]; then
+        DART_ERRORS+=("not an executable: $DART_ROOT_PATH/models/MOM6/work/perfect_model_obs")
+    fi
+    if [[ ! -d "$DART_ROOT_PATH/observations/obs_converters/CrocoLake" ]]; then
+        DART_ERRORS+=("not a directory:   $DART_ROOT_PATH/observations/obs_converters/CrocoLake")
+    fi
+    if [[ "${#DART_ERRORS[@]}" -gt 0 ]]; then
+        echo "Error: $DART_ROOT_PATH does not look like a compiled DART installation." >&2
+        for DART_ERROR in "${DART_ERRORS[@]}"; do
+            echo "  - $DART_ERROR" >&2
+        done
+        echo "model2obs needs both of the above. Point the installer at your own build with" >&2
+        echo "    ./install.sh <flags> --dart /path/to/DART" >&2
+        echo "or by exporting DART_ROOT_PATH. Note that DART must be compiled for the" >&2
+        echo "machine you are installing on." >&2
+        exit 1
+    fi
+fi
+
 if [[ "$FORCE" -eq 1 ]]; then
     ./clean.sh
 fi
@@ -168,11 +195,13 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     MODEL2OBS_SHA=$(git rev-parse HEAD)
     cp envpaths_NCAR.sh envpaths.sh
     MODEL2OBS_ENV_NAME="${ENV_PREFIX}""model2obs"
-    DART_ROOT_PATH=${DART_PATH} CONDA_ENV_NAME=${MODEL2OBS_ENV_NAME} ./install_NCAR.sh --tutorial
+    DART_ROOT_PATH=${DART_ROOT_PATH} CONDA_ENV_NAME=${MODEL2OBS_ENV_NAME} ./install_NCAR.sh --tutorial
     cd "$INSTALL_DIR"
     echo "model2obs environment installed."
-    cp "$MODEL2OBS_PATH"/tutorials/tutorial1_MOM6-CL-comparison.ipynb "$NBS_PATH"
-    cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_1.yaml "$NBS_PATH"
+    cp "$MODEL2OBS_PATH"/tutorials/tutorial_MOM6-CL-comparison-Hawaii.ipynb "$NBS_PATH"
+    cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_hawaii.yaml "$NBS_PATH"
+    cp "$MODEL2OBS_PATH"/tutorials/tutorial_MOM6-CL-comparison-NWA-parallel.ipynb "$NBS_PATH"
+    cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_NWA_parallel.yaml "$NBS_PATH"
 fi
 
 # CUPiD
@@ -324,6 +353,7 @@ MODEL2OBS:
     path:   $MODEL2OBS_PATH
     commit: $MODEL2OBS_SHA
     conda environment: $MODEL2OBS_ENV_NAME
+    DART root path: $DART_ROOT_PATH
 
 EOF
 fi

@@ -65,6 +65,9 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
     cd "$BASK_PATH"
     cd "$CROCODASH_PATH"
     git submodule update --init --recursive
+    cd "gallery"
+    git checkout main
+    git pull
     cd "$BASK_PATH"
     echo "CrocoDash downloaded."
 fi
