@@ -198,6 +198,8 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     echo "model2obs environment installed."
     cp "$MODEL2OBS_PATH"/tutorials/tutorial_MOM6-CL-comparison-Hawaii.ipynb "$NBS_PATH"
     cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_hawaii.yaml "$NBS_PATH"
+    cp "$MODEL2OBS_PATH"/tutorials/tutorial_MOM6-CL-comparison-NWA-parallel.ipynb "$NBS_PATH"
+    cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_NWA_parallel.yaml "$NBS_PATH"
 fi
 
 # CUPiD
