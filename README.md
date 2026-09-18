@@ -23,7 +23,7 @@ From the repository root, run:
 #### Package Selection
 - `--crocodash`: Install CrocoDash model components
 - `--model2obs`: Install model2obs diagnostics tools
-- `--cupid`: Install CUPiD diagnostics framework
+- `--mom6-tools`: Install mom6-tools diagnostics framework
 - `--cesm`: Install CESM model
 - `--cesm_da`: Install CESM_DA, a DART-enabled version of CESM. Combined with `--notebooks`, also builds a `CESM_DA` conda environment (from CrocoDash's `environment.yml` plus `pydartdiags` and `dartobsgen`, which implies `--crocodash`) for the DART notebooks in CrocoGallery
 - `--dart`: Currently a no-op on its own — DART is not yet installed as a standalone package/environment. It only sets the `DART_PATH` used by the model2obs installer. Standalone DART installation may be added in a future release.
@@ -62,7 +62,7 @@ If a package already exists at the target path, the script stops with an error b
 ./install.sh --cesm -f
 
 # Install using SSH URLs (requires GitHub SSH key)
-./install.sh --crocodash --cupid -s
+./install.sh --crocodash --mom6-tools -s
 
 # Choose each package path interactively
 ./install.sh --all --paths
@@ -72,7 +72,7 @@ If a package already exists at the target path, the script stops with an error b
 
 - **CrocoDash**: CESM-MOM6 regional cases set up management
 - **model2obs**: Diagnostics and analysis tools for MOM6 (and soon ROMS) model output
-- **CUPiD**: NCAR's unified framework for running analysis and diagnostics on climate model output
+- **mom6-tools**: NCAR's framework for running analysis and diagnostics on MOM6 output
 - **CESM**: Community Earth System Model for climate simulations
 - **CESM_DA**: DART-enabled Community Earth System Model
 - **DART**: Data Assimilation Research Testbed for ensemble data assimilation
