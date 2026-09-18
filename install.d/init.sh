@@ -79,7 +79,6 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     git clone "$MODEL2OBS_GITHUB" "$MODEL2OBS_PATH"
     cd "$MODEL2OBS_PATH"
     git fetch --tags
-    git checkout feat/update-for-crocodile-2026-workshop
     cd "$BASK_PATH"
     echo "model2obs downloaded."
 fi
