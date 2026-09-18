@@ -57,10 +57,12 @@ if [[ "$INSTALL_CROCODASH" -eq 1 ]]; then
     git clone "$CROCODASH_GITHUB" "$CROCODASH_PATH"
     cd "$CROCODASH_PATH"
     git fetch --tags
-    git pull
     cd "$BASK_PATH"
     cd "$CROCODASH_PATH"
     git submodule update --init --recursive
+    cd "gallery"
+    git checkout main
+    git pull
     cd "$BASK_PATH"
     echo "CrocoDash downloaded."
 fi
