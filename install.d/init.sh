@@ -10,11 +10,13 @@ if [[ "$SSH_GITHUB" -eq 1 ]]; then
     MODEL2OBS_GITHUB="git@github.com:CROCODILE-CESM/model2obs.git"
     CUPID_GITHUB="git@github.com:NCAR/CUPiD.git"
     CESM_GITHUB="git@github.com:CROCODILE-CESM/CESM"
+    CESM_DA_GITHUB="git@github.com:CROCODILE-CESM/CESM"
 else
     CROCODASH_GITHUB="https://github.com/CROCODILE-CESM/CrocoDash.git"
     MODEL2OBS_GITHUB="https://github.com/CROCODILE-CESM/model2obs.git"
     CUPID_GITHUB="https://github.com/NCAR/CUPiD.git"
     CESM_GITHUB="https://github.com/CROCODILE-CESM/CESM"
+    CESM_DA_GITHUB="https://github.com/CROCODILE-CESM/CESM"
 fi
 
 #### Existence check
@@ -39,6 +41,9 @@ if [[ "$INSTALL_CUPID" -eq 1 ]]; then
 fi
 if [[ "$INSTALL_CESM" -eq 1 ]]; then
     check_existing "CESM" "$CESM_PATH"
+fi
+if [[ "$INSTALL_CESM_DA" -eq 1 ]]; then
+    check_existing "CESM_DA" "$CESM_DA_PATH"
 fi
 
 if [[ "${#EXISTING_PACKAGES[@]}" -gt 0 ]]; then
@@ -102,4 +107,14 @@ if [[ "$INSTALL_CESM" -eq 1 ]]; then
     cd "$CESM_PATH"
     git pull
     echo "CESM downloaded."
+fi
+
+#### CESM_DA
+
+if [[ "$INSTALL_CESM_DA" -eq 1 ]]; then
+    echo "Downloading CESM_DA..."
+    git clone -b full_regional_cesm_dart "$CESM_DA_GITHUB" "$CESM_DA_PATH"
+    cd "$CESM_DA_PATH"
+    git pull
+    echo "CESM_DA downloaded."
 fi

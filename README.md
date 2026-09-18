@@ -25,6 +25,7 @@ From the repository root, run:
 - `--model2obs`: Install model2obs diagnostics tools
 - `--cupid`: Install CUPiD diagnostics framework
 - `--cesm`: Install CESM model
+- `--cesm_da`: Install CESM_DA, a DART-enabled version of CESM. Combined with `--notebooks`, also builds a `CESM_DA` conda environment (from CrocoDash's `environment.yml` plus `pydartdiags` and `dartobsgen`, which implies `--crocodash`) for the DART notebooks in CrocoGallery
 - `--dart`: Root path of an existing DART installation, used by model2obs (see [DART](#dart) below)
 - `--all`: Install all packages (includes `--notebooks`)
 - `--workshop`: Install all and only the packages used during the CROCODILE workshop (includes `--notebooks`)
@@ -88,6 +89,7 @@ The installer resolves the DART root in this order:
 - **CUPiD**: NCAR's unified framework for running analysis and diagnostics on climate model output
 - **CESM**: Community Earth System Model for climate simulations
 - **DART**: path to DART (Data Assimilation Research Testbed), used by model2obs not installed here
+- **CESM_DA**: DART-enabled Community Earth System Model
 
 ## Workspace
 
