@@ -1,5 +1,0 @@
-mom6-tools:
-    path:   /glade/work/ajanney/CROCODILE_WORKSHOP_2026/bask_config/CROCODILEworkspace/mom6-tools
-    commit: 24fd0f309caf906128e88f3347fd0dd082a29f3b
-    conda environment: mom6-tools
-
