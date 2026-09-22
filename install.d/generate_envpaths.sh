@@ -11,6 +11,7 @@ declare -A PKG_PATHS=(
     [CESM_DA]="CESM_DA"
     [MODEL2OBS]="model2obs"
     [CROCODASH]="CrocoDash"
+    [MOM6TOOLS]="mom6-tools"
     [CUPID]="CUPiD"
 )
 
@@ -72,6 +73,7 @@ for ((i=1; i<=$#; i++)); do
         *)
             upper="${arg#--}"
             upper="${upper^^}"
+            upper="${upper//-/}"
             if [[ -v PKG_PATHS[$upper] ]]; then
                 declare "${upper}=1"
             else

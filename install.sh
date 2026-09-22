@@ -12,6 +12,7 @@ Package Selection:
                     builds a CESM_DA conda env for the DART notebooks)
   --model2obs       Install model2obs diagnostics tools
   --crocodash       Install CrocoDash model components
+  --mom6-tools      Install mom6-tools diagnostics tools
   --cupid           Install CUPiD diagnostics framework
   --dart            Root of an existing DART installation (used by model2obs)
   --notebooks       Render CrocoGallery notebooks listed in install.d/notebooks.txt
@@ -204,6 +205,25 @@ if [[ "$INSTALL_MODEL2OBS" -eq 1 ]]; then
     cp "$MODEL2OBS_PATH"/tutorials/config_tutorial_NWA_parallel.yaml "$NBS_PATH"
 fi
 
+# mom6-tools
+if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
+    echo "Installing mom6-tools environment..."
+    cd "$MOM6TOOLS_PATH"
+    MOM6TOOLS_SHA=$(git rev-parse HEAD)
+    cd "$INSTALL_DIR"
+    ENV_NAME=$(awk -F ": " '/^name:/ {print $2}' "$MOM6TOOLS_PATH/environment.yml")
+    MOM6TOOLS_ENV_NAME="${ENV_PREFIX}${ENV_NAME}"
+    mamba env create -f "$MOM6TOOLS_PATH"/environment.yml --name ${MOM6TOOLS_ENV_NAME} --yes
+    add_env_vars_to_conda "$MOM6TOOLS_ENV_NAME"
+    echo "mom6-tools environment installed."
+
+    # Notebooks are copied straight out of the checkout, same as the model2obs
+    MOM6TOOLS_NBS_DIR="mom6_tools/nb_templates/regional_notebooks"
+    for NB in "$MOM6TOOLS_PATH/$MOM6TOOLS_NBS_DIR"/*.ipynb; do
+        cp "$NB" "${NBS_PATH}mom6_tools.$(basename "$NB")"
+    done
+fi
+
 # CUPiD
 if [[ "$INSTALL_CUPID" -eq 1 ]]; then
     echo "Installing CUPiD environments..."
@@ -354,6 +374,15 @@ MODEL2OBS:
     commit: $MODEL2OBS_SHA
     conda environment: $MODEL2OBS_ENV_NAME
     DART root path: $DART_ROOT_PATH
+
+EOF
+fi
+if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
+    cat <<EOF | tee -a $INSTALL_RECORD
+mom6-tools:
+    path:   $MOM6TOOLS_PATH
+    commit: $MOM6TOOLS_SHA
+    conda environment: $MOM6TOOLS_ENV_NAME
 
 EOF
 fi
