@@ -216,6 +216,12 @@ if [[ "$INSTALL_MOM6TOOLS" -eq 1 ]]; then
     mamba env create -f "$MOM6TOOLS_PATH"/environment.yml --name ${MOM6TOOLS_ENV_NAME} --yes
     add_env_vars_to_conda "$MOM6TOOLS_ENV_NAME"
     echo "mom6-tools environment installed."
+
+    # Notebooks are copied straight out of the checkout, same as the model2obs
+    MOM6TOOLS_NBS_DIR="mom6_tools/nb_templates/regional_notebooks"
+    for NB in "$MOM6TOOLS_PATH/$MOM6TOOLS_NBS_DIR"/*.ipynb; do
+        cp "$NB" "${NBS_PATH}mom6_tools.$(basename "$NB")"
+    done
 fi
 
 # CUPiD
