@@ -23,6 +23,7 @@ From the repository root, run:
 #### Package Selection
 - `--crocodash`: Install CrocoDash model components
 - `--model2obs`: Install model2obs diagnostics tools
+- `--mom6-tools`: Install mom6-tools diagnostics tools
 - `--cupid`: Install CUPiD diagnostics framework
 - `--cesm`: Install CESM model
 - `--cesm_da`: Install CESM_DA, a DART-enabled version of CESM. Combined with `--notebooks`, also builds a `CESM_DA` conda environment (from CrocoDash's `environment.yml` plus `pydartdiags` and `dartobsgen`, which implies `--crocodash`) for the DART notebooks in CrocoGallery
@@ -86,6 +87,7 @@ The installer resolves the DART root in this order:
 
 - **CrocoDash**: CESM-MOM6 regional cases set up management
 - **model2obs**: Diagnostics and analysis tools for MOM6 (and soon ROMS) model output
+- **mom6-tools**: NCAR's diagnostics and analysis package for MOM6 model output
 - **CUPiD**: NCAR's unified framework for running analysis and diagnostics on climate model output
 - **CESM**: Community Earth System Model for climate simulations
 - **DART**: path to DART (Data Assimilation Research Testbed), used by model2obs not installed here

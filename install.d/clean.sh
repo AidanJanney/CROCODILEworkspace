@@ -14,6 +14,7 @@ Package Selection:
   --cesm_da         Remove CESM_DA DART-enabled CESM checkout
   --model2obs       Remove model2obs diagnostics tools
   --crocodash       Remove CrocoDash model components
+  --mom6-tools      Remove mom6-tools diagnostics tools (alias: --mom6tools)
   --cupid           Remove CUPiD diagnostics framework
   --all             Remove all packages
 
@@ -35,7 +36,7 @@ EOF
 fi
 
 # If no arguments provided, use envpaths.sh (preserves original behavior when called from install.sh)
-PKGS=(CESM CESM_DA MODEL2OBS CROCODASH CUPID)
+PKGS=(CESM CESM_DA MODEL2OBS CROCODASH MOM6TOOLS CUPID)
 source ./envpaths.sh
 
 if [[ $# -eq 0 ]]; then
@@ -62,6 +63,7 @@ else
             *)
                 upper="${arg#--}"
                 upper="${upper^^}"
+                upper="${upper//-/}"
                 for PKG in "${PKGS[@]}"; do
                     if [[ "$PKG" == "$upper" ]]; then
                         export "CLEAN_${upper}=1"
@@ -89,6 +91,14 @@ if [ "$CLEAN_MODEL2OBS" -eq 1 ] && [ -n "$MODEL2OBS_PATH" ]; then
     cd "$BASK_PATH"
     rm -rf "$MODEL2OBS_PATH"
     echo "model2obs removed."
+fi
+
+# mom6-tools
+if [ "$CLEAN_MOM6TOOLS" -eq 1 ] && [ -n "$MOM6TOOLS_PATH" ]; then
+    echo "Removing mom6-tools..."
+    cd "$BASK_PATH"
+    rm -rf "$MOM6TOOLS_PATH"
+    echo "mom6-tools removed."
 fi
 
 # CUPiD
